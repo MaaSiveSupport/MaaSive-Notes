@@ -1,22 +1,18 @@
-//
-//  MaaSiveNotesAppDelegate.m
-//  MaaSiveNotes
-//
-//  Created by Brandon Trebitowski on 8/16/11.
-//  Copyright 2011 __MyCompanyName__. All rights reserved.
-//
 
+#import <MaaSive/MaaSive.h>
 #import "MaaSiveNotesAppDelegate.h"
 
 @implementation MaaSiveNotesAppDelegate
 
-
 @synthesize window=_window;
-
 @synthesize navigationController=_navigationController;
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
 {
+    MaaSManager *manager = [MaaSManager sharedManager];
+    [manager setAppId:@"7ce19a9d86ec144f0e5138e023"];
+    [manager setSecretKey:@"92ba87c3aa2f3e786b547ef147046e703e4bc21f7ea829ce7fdd5e60668d8d89"];
+    
     // Override point for customization after application launch.
     // Add the navigation controller's view to the window and display.
     self.window.rootViewController = self.navigationController;

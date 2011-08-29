@@ -1,143 +1,138 @@
-//
-//  RootViewController.m
-//  MaaSiveNotes
-//
-//  Created by Brandon Trebitowski on 8/16/11.
-//  Copyright 2011 __MyCompanyName__. All rights reserved.
-//
 
 #import "RootViewController.h"
+#import "NoteViewController.h"
+#import "Note.h"
 
 @implementation RootViewController
 
-- (void)viewDidLoad
-{
+@synthesize notes = _notes;
+
+- (void)viewDidLoad {
+
     [super viewDidLoad];
+
+	UIBarButtonItem *addButton  = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemAdd
+																				target:self
+																				action:@selector(addNote:)];
+    self.navigationItem.rightBarButtonItem = addButton;
+    [addButton release];
+    
+    self.title = @"My Notes";
 }
 
-- (void)viewWillAppear:(BOOL)animated
-{
-    [super viewWillAppear:animated];
+- (void)viewWillAppear:(BOOL)animated {
+
+    [super viewWillAppear:animated];    
+    
+    NSDictionary *query = [NSDictionary dictionaryWithObject:[[UIDevice currentDevice] uniqueIdentifier]
+                                                      forKey:@"deviceID.eql"];
+    
+    [Note findRemoteAsyncWithQuery:query
+                      cacheResults:YES 
+                            target:self
+                          selector:@selector(maaSiveDidFindNotes:error:)];
 }
 
-- (void)viewDidAppear:(BOOL)animated
-{
-    [super viewDidAppear:animated];
+-(void)maaSiveDidFindNotes:(NSArray*)notes error:(NSError*)error {
+
+    if(!error) {
+        
+        self.notes = [notes mutableCopy];
+        [self.tableView performSelectorOnMainThread:@selector(reloadData) 
+                                         withObject:nil 
+                                      waitUntilDone:NO];
+    }
+    
+    else {
+    
+        UIAlertView *errorAlert = [[UIAlertView alloc] initWithTitle:@"Fetch Error" 
+                                                             message:@"There was a problem with MaaSive" 
+                                                            delegate:self 
+                                                   cancelButtonTitle:@"Ok"
+                                                   otherButtonTitles:nil];
+        [errorAlert show];
+        [errorAlert release];
+    }
 }
 
-- (void)viewWillDisappear:(BOOL)animated
-{
+- (void) addNote:(id) sender {
+   
+	NoteViewController *controller = [[NoteViewController alloc] initWithNibName:@"NoteViewController" bundle:[NSBundle mainBundle]];
+	[controller setRootController:self];
+    Note *note = [[Note alloc] init];
+    controller.note = note;
+    
+	[self.navigationController pushViewController:controller animated:YES];
+    [controller release];
+    [note release];
+}
+
+- (void)viewDidAppear:(BOOL)animated {
+
+    [super viewDidAppear:animated];	
+}
+
+- (void)viewWillDisappear:(BOOL)animated {
+
 	[super viewWillDisappear:animated];
 }
 
-- (void)viewDidDisappear:(BOOL)animated
-{
+- (void)viewDidDisappear:(BOOL)animated {
+
 	[super viewDidDisappear:animated];
 }
 
-/*
- // Override to allow orientations other than the default portrait orientation.
-- (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation {
-	// Return YES for supported orientations.
-	return (interfaceOrientation == UIInterfaceOrientationPortrait);
-}
- */
+#pragma mark UITableViewDataSource Methods
 
-// Customize the number of sections in the table view.
-- (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView
-{
+- (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
+
     return 1;
 }
 
-- (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
-{
-    return 0;
+- (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
+
+    return [self.notes count];
 }
 
-// Customize the appearance of table view cells.
-- (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
-{
+- (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
+
     static NSString *CellIdentifier = @"Cell";
     
     UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:CellIdentifier];
     if (cell == nil) {
         cell = [[[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:CellIdentifier] autorelease];
     }
-
-    // Configure the cell.
+    
+    Note *note = [self.notes objectAtIndex:indexPath.row];
+    [cell.textLabel setText:note.content];
+    
     return cell;
 }
 
-/*
-// Override to support conditional editing of the table view.
-- (BOOL)tableView:(UITableView *)tableView canEditRowAtIndexPath:(NSIndexPath *)indexPath
-{
-    // Return NO if you do not want the specified item to be editable.
-    return YES;
-}
-*/
+#pragma mark UITableViewDelegate Methods
 
-/*
-// Override to support editing the table view.
-- (void)tableView:(UITableView *)tableView commitEditingStyle:(UITableViewCellEditingStyle)editingStyle forRowAtIndexPath:(NSIndexPath *)indexPath
-{
-    if (editingStyle == UITableViewCellEditingStyleDelete)
-    {
-        // Delete the row from the data source.
-        [tableView deleteRowsAtIndexPaths:[NSArray arrayWithObject:indexPath] withRowAnimation:UITableViewRowAnimationFade];
-    }
-    else if (editingStyle == UITableViewCellEditingStyleInsert)
-    {
-        // Create a new instance of the appropriate class, insert it into the array, and add a new row to the table view.
-    }   
-}
-*/
+- (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
 
-/*
-// Override to support rearranging the table view.
-- (void)tableView:(UITableView *)tableView moveRowAtIndexPath:(NSIndexPath *)fromIndexPath toIndexPath:(NSIndexPath *)toIndexPath
-{
-}
-*/
-
-/*
-// Override to support conditional rearranging of the table view.
-- (BOOL)tableView:(UITableView *)tableView canMoveRowAtIndexPath:(NSIndexPath *)indexPath
-{
-    // Return NO if you do not want the item to be re-orderable.
-    return YES;
-}
-*/
-
-- (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
-{
-    /*
-    <#DetailViewController#> *detailViewController = [[<#DetailViewController#> alloc] initWithNibName:@"<#Nib name#>" bundle:nil];
-    // ...
-    // Pass the selected object to the new view controller.
-    [self.navigationController pushViewController:detailViewController animated:YES];
-    [detailViewController release];
-	*/
+    NoteViewController *controller = [[NoteViewController alloc] initWithNibName:@"NoteViewController" bundle:[NSBundle mainBundle]];
+    Note *note = [self.notes objectAtIndex:indexPath.row];
+    controller.note = note;
+    [self.navigationController pushViewController:controller animated:YES];
+    [controller release];
 }
 
-- (void)didReceiveMemoryWarning
-{
-    // Releases the view if it doesn't have a superview.
+- (void)didReceiveMemoryWarning {
+
     [super didReceiveMemoryWarning];
-    
-    // Relinquish ownership any cached data, images, etc that aren't in use.
 }
 
-- (void)viewDidUnload
-{
+- (void)viewDidUnload {
+
     [super viewDidUnload];
-
-    // Relinquish ownership of anything that can be recreated in viewDidLoad or on demand.
-    // For example: self.myOutlet = nil;
 }
 
-- (void)dealloc
-{
+- (void)dealloc {
+
+    [_notes release];
     [super dealloc];
 }
 

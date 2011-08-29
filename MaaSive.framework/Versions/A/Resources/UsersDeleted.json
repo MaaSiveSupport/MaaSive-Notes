@@ -1,0 +1,16 @@
+{
+"results": [
+{
+"User": {
+"_id": "4e31da6c3e9f770000000455",
+"realName": "User1",
+"bigNumber": "1311890028821",
+"username": "foouser",
+"email": "",
+"created_at": 1311890028000,
+"updated_at": 1312211344000,
+"_deleted":true
+}
+}
+]
+}
