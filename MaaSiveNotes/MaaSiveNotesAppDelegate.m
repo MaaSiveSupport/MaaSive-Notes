@@ -10,8 +10,11 @@
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
 {
     MaaSManager *manager = [MaaSManager sharedManager];
-    [manager setAppId:@"7ce19a9d86ec144f0e5138e023"];
-    [manager setSecretKey:@"92ba87c3aa2f3e786b547ef147046e703e4bc21f7ea829ce7fdd5e60668d8d89"];
+	
+#warning Fill in custom App ID and Secret Key here for Demo Application To Save To MaaSive
+	
+    [manager setAppId:@""];
+    [manager setSecretKey:@""];
     
     // Override point for customization after application launch.
     // Add the navigation controller's view to the window and display.
