@@ -13,8 +13,8 @@
 	
 #warning Fill in custom App ID and Secret Key here for Demo Application To Save To MaaSivegit 
 	
-    [manager setAppId:@"605e2c0d082d3ab74913b91a3500"];
-    [manager setSecretKey:@"c63a2962384d529b18b82f6877433ea0a611e803ccf4a16fb9fe9ddc56ce14704a427ecf"];
+    [manager setAppId:@" ENTER_APP_ID_HERE "];
+    [manager setSecretKey:@" ENTER_SECRET_KEY_HERE "];
      
     // Override point for customization after application launch.
     // Add the navigation controller's view to the window and display.
