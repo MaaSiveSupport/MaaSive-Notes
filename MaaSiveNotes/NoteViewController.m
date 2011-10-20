@@ -38,7 +38,8 @@
     self.note.content = self.noteContentText.text;
     self.note.deviceID = [[UIDevice currentDevice] uniqueIdentifier];
     NSError *saveError = nil;
-    BOOL success = [self.note saveRemote:&saveError];
+    BOOL success = [self.note saveRemote:&saveError
+                            cacheResults:YES];
     
     if(success) {
         [self.navigationController popViewControllerAnimated:YES];
